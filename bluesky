@@ -1,0 +1,80 @@
+#! /usr/bin/env -S uv run --script
+
+# /// script
+# dependencies = [ "atproto" ]
+# ///
+
+# This file SHOULD NOT be modified by the candidate, but used "as is".
+# Processing needs to happen in another program - reading the stdout of this file.
+#
+# To run this file, please first install uv
+# $  curl -LsSf https://astral.sh/uv/install.sh | sh
+# and then the script should works out of the box
+# $ ./bluesky
+
+
+import datetime
+import json
+import random
+import sys
+
+from atproto import (
+    CAR,
+    FirehoseSubscribeReposClient,
+    models,
+    parse_subscribe_repos_message,
+)
+
+def log(msg):
+    print(msg, file=sys.stderr)
+
+
+class BytesEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, bytes):
+            return "<binary>"
+        return super().default(o)
+
+
+def on_message_handler(message):
+    commit = parse_subscribe_repos_message(message)
+
+    if (
+        not isinstance(commit, models.ComAtprotoSyncSubscribeRepos.Commit)
+        or not commit.blocks
+    ):
+        return
+
+    for op in commit.ops:
+        record = None
+        record = CAR.from_bytes(commit.blocks).blocks.get(op.cid)  # type: ignore
+        if op.action == "create":
+            print(
+                json.dumps(
+                    {
+                        "timestamp": datetime.datetime.now().isoformat(),
+                        **op.model_dump(),
+                        "record": record,
+                        "repo": str(commit.repo),
+                    },
+                    cls=BytesEncoder,
+                )
+            )
+
+
+def main(sample_ratio: float = 1):
+    client = FirehoseSubscribeReposClient()
+    try:
+        log("\nSubscribing to firehose...")
+        client.start(lambda x: random.random() < sample_ratio and on_message_handler(x))
+    except KeyboardInterrupt:
+        log("\nShutting down firehose subscription...")
+
+
+if __name__ == "__main__":
+    sample_ratio = 1
+    if len(sys.argv) > 1:
+        sample_ratio = float(sys.argv[1])
+    main(sample_ratio)
+
+# vim: set ft=python:

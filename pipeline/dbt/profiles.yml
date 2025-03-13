@@ -1,0 +1,6 @@
+adam_samuel:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: '../analytics_dev.duckdb'

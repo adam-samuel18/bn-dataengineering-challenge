@@ -1,0 +1,19 @@
+name: 'bright_network_assignment'
+version: '1.0.0'
+
+config-version: 2
+
+profile: 'adam_samuel'
+
+model-paths: ["models"]
+target-path: "target"
+
+models:
+  transient: False
+  adam_samuel:
+    staging:
+      schema: staging
+      materialized: view
+    marts:
+      schema: marts
+      materialized: table

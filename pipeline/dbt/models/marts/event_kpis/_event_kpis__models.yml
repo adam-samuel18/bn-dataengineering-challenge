@@ -1,0 +1,34 @@
+models:
+
+  - name: fast_likers
+    description: "A list of all users who liked atleast 50 posts in less than a minute."
+    columns:
+      - name: user_id
+        tests: 
+          - unique
+          - not_null
+
+  - name: likes_per_minute
+    description: "The number of likes over time (minute by minute)"
+    columns:
+      - name: ts_minute
+        tests: 
+          - unique
+          - not_null
+      - name: likes
+
+  - name: top_ten_word
+    description: "The top 10 meaningful words used in posts that contain the word 'engineering'"
+    columns:
+      - name: word
+        tests: 
+          - unique
+          - not_null
+      - name: word_count
+
+  - name: posts_by_time_of_day
+    description: "The number of posts by day of week and hour of day"
+    columns:
+      - name: day_of_week
+      - name: hour_of_day
+      - name: number_of_posts

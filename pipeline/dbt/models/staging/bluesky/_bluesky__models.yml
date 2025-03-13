@@ -1,0 +1,9 @@
+models:
+  - name: stg_bluesky__events
+    description: "A flattened view of the raw event data from bluesky"
+    columns:
+      - name: timestamp
+      - name: action
+      - name: event_name
+      - name: record_text
+      - name: user_id      

@@ -1,0 +1,11 @@
+sources:
+  - name: bluesky
+    freshness:
+      warn_after: {count: 12, period: hour}
+      error_after: {count: 24, period: hour}
+    loaded_at_field: timestamp
+
+    tables:
+      - name: events
+        meta:
+          external_location: "read_json('../../bluesky.events')"
