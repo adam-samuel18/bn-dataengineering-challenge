@@ -4,6 +4,7 @@ python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt
 python3 bluesky.events
 python3 pipeline/python/bluesky_events.py
+python3 pipeline/python/likes_per_minute.py
 cd pipeline/dbt
 dbt deps
 dbt build

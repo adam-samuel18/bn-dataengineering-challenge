@@ -12,3 +12,4 @@ pipeline/dbt/logs/**
 pipeline/dbt/target/**
 pipeline/dbt/.user.yml
 pipeline/dbt/package-lock.yml
+.vscode/**

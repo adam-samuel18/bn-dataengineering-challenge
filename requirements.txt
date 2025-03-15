@@ -3,3 +3,4 @@ dbt-duckdb==1.9.2
 duckdb==1.2.1
 numpy==2.2.3
 pandas==2.2.3
+polars==1.25.2
