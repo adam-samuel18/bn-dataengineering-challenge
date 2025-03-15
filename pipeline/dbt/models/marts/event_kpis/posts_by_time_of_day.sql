@@ -1,7 +1,7 @@
 {{
     config(
         materialized = 'table',
-        tags = ['daily','early_morning'],
+        tags = ['daily','every_30_mins'],
         post_hook = "COPY {{ this }} TO '../../metrics/posts-by-time-of-day.csv' (HEADER, DELIMITER ',');"
     )
 }}

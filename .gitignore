@@ -5,3 +5,10 @@ metrics/
 *.swo
 *.log
 bluesky.events
+**/analytics_dev.duckdb
+venv/**
+pipeline/dbt/dbt_packages/**
+pipeline/dbt/logs/**
+pipeline/dbt/target/**
+pipeline/dbt/.user.yml
+pipeline/dbt/package-lock.yml

@@ -1,7 +1,7 @@
 {{
     config(
         materialized = 'view',
-        tags = ['daily','early_morning']
+        tags = ['daily','every_30_mins']
     )
 }}
 
