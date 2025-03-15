@@ -2,41 +2,41 @@
 
 ## Instructions for running the pipeline
 
-1. First create a virtual environment and then activate it by running:
+1. First create a virtual environment and then activate it:
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-2. Upgrade pip and install the requirements by running:
+2. Upgrade pip and install the requirements:
 ```bash
 python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt
 ```
 
-3. Load the bluesky events in json format by running:
+3. Load the bluesky events in json format:
 ```bash
 python3 bluesky.events
 ```
 
 4. Run the transformation scripts to transform the data and output the metrics
-as csv files in the /metrics folder. There are four options for this.
+as csv files in the /metrics folder. There are four options for this:
 
-Option 1: Running the dbt pipeline
+### Option 1: Run the dbt pipeline
 ```bash
 cd pipeline/dbt
 dbt deps
 dbt build
 ```
 
-Option 2: Running the python script bluesky_events.py (this script is written
-in python but the transformations are in SQL)
+### Option 2: Run the python script bluesky_events.py
+(this script is written in python but the transformations are in SQL)
 ```bash
 python3 pipeline/python/bluesky_events.py
 ```
 
-Option 3: Running the python script likes_per_minute.py (this is done completely
-in python using no SQL). 
+### Option 3: Run the python script likes_per_minute.py
+(this is done completely in python using no SQL). 
 ```bash
 python3 pipeline/python/likes_per_minute.py
 ```
@@ -46,10 +46,11 @@ replicated for the other metrics. This file was solely created to show
 proficiency transforming data in python. For something more scalable a class
 would be created, such as in the python/bluesky_events.py script.
 
-Option 4: Running the airflow dag which can be found in the /airflow-dags folder
+### Option 4: Running the airflow dag
+This can be found in the /airflow-dags folder.
 This option hasn't been fully implemented as it would require setting up airflow
 however it is a good option to have in a production environment since the DAG
-ensures that the pipeline runs in the correct order. This dag runs the
+ensures that the pipeline runs in the correct order. This dag is designed to run the
 bluesky.events script and then the dbt models and tests every 30 minutes.
 
 ## Explanation of Approach (Choices and Limitations)
