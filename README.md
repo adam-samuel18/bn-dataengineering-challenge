@@ -4,7 +4,7 @@
 1. [Instructions for running the pipeline](#instructions-for-running-the-pipeline)
 2. [Explanation of Approach (Choices and Limitations)](#explanation-of-approach-choices-and-limitations)
 3. [Productionising the Code](#productionising-the-code)
-4. [Additional Metric](#additional-metric---posts-by-time-of-day)
+4. [Additional Metric](#additional-metric---daily-active-users)
 5. [Tasks not Completed](#tasks-not-completed)
 
 ## Instructions for running the pipeline
@@ -211,18 +211,23 @@ In development, while running the code in a virtual environment is often suffici
 would be better to run the code inside a dev container to ensure an exact replica of 
 the conditions inside the production container.
 
-## Additional Metric - Posts by time of day
+## Additional Metric - Daily Active Users
 
-I have included the metric "Posts by time of day" as it is useful for the
-business to know which days of the week and what time of day people are most
-active on the platform. Such information could be used to price ads for example
-(if bluesky has ads).
+I have included the metric Daily Active Users (DAUs). DAUs measures the number of
+unique people who use the app each day. It is a key metric for social media
+applications like bluesky. Monitoring it can help determine whether the business
+is growing or shrinking. Understanding the DAU can also help to determine retention
+rates from which the lifetime value (LTV) can be calculated. The main limitation of
+DAU is that, while it is often used to indicate a applications's stickiness (i.e. how
+likely a user is to return to the app), sometimes the DAU can increase for other
+reasons, e.g. an increase in marketing spending could cause people to log into the
+app and then never return.
 
 In a production environment it is likely that we would be able to ingest a
-'users' table into the data warehouse which would likely include the date that
+'users' table into the data warehouse which would include the date that
 the user joined the platform. Were this information available to me I would use
-it to look at user retention (particularly in the first 7 days of joining the
-platform). My experience has shown me that the amount of activity the user
+it to look at retention rates (particularly in the first 7 days of joining the
+platform). My experience has shown that the amount of activity the user
 exhibits in the first 7 days has a profound impact on how likely they are to use
 the platform long term.
 
