@@ -1,4 +1,11 @@
-# Senior Data Engineering - Take home task
+# Bluesky Events Pipeline
+
+## Table of Contents
+1. [Instructions for running the pipeline](#instructions-for-running-the-pipeline)
+2. [Explanation of Approach (Choices and Limitations)](#explanation-of-approach-choices-and-limitations)
+3. [Productionising the Code](#productionising-the-code)
+4. [Additional Metric](#additional-metric---posts-by-time-of-day)
+5. [Tasks not Completed](#tasks-not-completed)
 
 ## Instructions for running the pipeline
 
@@ -22,31 +29,32 @@ python3 bluesky.events
 4. Run the transformation scripts to transform the data and output the metrics
 as csv files in the /metrics folder. There are four options for this:
 
-### Option 1: Run the dbt pipeline
+* Option 1: Run the dbt pipeline
 ```bash
 cd pipeline/dbt
 dbt deps
 dbt build
 ```
 
-### Option 2: Run the python script bluesky_events.py
+* Option 2: Run the python script bluesky_events.py
 (this script is written in python but the transformations are in SQL)
 ```bash
 python3 pipeline/python/bluesky_events.py
 ```
 
-### Option 3: Run the python script likes_per_minute.py
-(this is done completely in python using no SQL). 
+* Option 3: Run the python script likes_per_minute.py
+(this is done completely in python using no SQL)
 ```bash
 python3 pipeline/python/likes_per_minute.py
 ```
 
-This has only been done for the metric 'likes per minute' but could be
-replicated for the other metrics. This file was solely created to show
-proficiency transforming data in python. For something more scalable a class
-would be created, such as in the python/bluesky_events.py script.
+For the purpose of this task, only the metric 'likes per minute' has been transformed
+in this way. However this could be replicated for the other metrics.
+This file was solely created to show proficiency transforming data in python. For
+something more scalable a class would be created, such as in the
+python/bluesky_events.py script.
 
-### Option 4: Running the airflow dag
+* Option 4: Running the airflow dag
 This can be found in the /airflow-dags folder.
 This option hasn't been fully implemented as it would require setting up airflow
 however it is a good option to have in a production environment since the DAG
@@ -103,7 +111,7 @@ not upheld, particularly if there are inexperienced engineers as part of the tea
 3. dbt is more suited to batch processing of data so may not be suitable where
 live data needs to be streamed
 
-## dbt Project Design
+### dbt Project Design
 
 The pipeline was created using dbt and duckdb. The project utilises dbt best
 practices. The structure mimics [dbt's guidelines](https://docs.getdbt.com/best-practices/how-we-structure/1-guide-overview).
@@ -111,44 +119,97 @@ The staging model is materialised as a view so that it is quick to build.
 Meanwhile the models in the mart layer are materialised as tables since we
 expect them to be regularly queried.
 
-### Sources
+#### Sources
 
 The bluesky.events file is listed as a source. I have included a source freshness
 snapshot. In production this would be run reguarly so it is useful to know how up
 to date the source data is.
 
-### Staging
+#### Staging
 
 In the staging layer the json event data is flattened and data types are cast.
 
-### Intermediate
+#### Intermediate
 
 Since this is a very simple pipeline I haven't included any intermediate models.
 However in production I would normally use this layer for joins, unions, and
 more complex calculations. I often utilise dbt macros (particularly dbt utils
 surrogate key and dbt union relations) to keep my code concise.
 
-### Marts
+#### Marts
 
 This layer contains the production ready data. I've added post hooks to the
 models to write the data to csv files in the metrics/ folder
 
-### Tests
+#### Tests
 
-I've added some unique and not null tests in the marts layer to ensure that the
+There are some unique and not null tests in the marts layer to ensure that the
 primary keys don't contain duplicates. I often add tests and create slack alerts
 for these so that any data issues are caught quickly.
 
-### Tags
+#### Tags
 
-I've added tags to the models. While they don't do anything in this pipeline, I
-usually use these tags to dictate when the pipelines run.
+Tags were added to the models. While they don't do anything in this pipeline, which
+can be used to dictate when the pipelines run.
 
-## Code Linting
+## Productionising the Code
 
-The code linting packages that I would normally use in production are:
-- sqlfluff - for dbt models
-- black & flake8 - for python scripts
+The following changes would be made to run the code in production.
+
+### CI/CD
+
+The following could be created using Github workflows:
+* pre-hooks to lint the code - black and flake8 for python, sqlfluff for dbt models,
+  yaml-lint for yml files
+* post-hooks to generate and upload the dbt docs to an s3 bucket
+
+Linting the code would ensure that high coding standards are upheld.
+Generating dbt docs would enable one to easily see data lineage while also enabling the
+possibility of running models using `--defer` flag, saving compute resources since
+the upstream tables wouldn't require rebuilding in dev.
+
+### Secrets Management
+
+While this particular pipeline doesn't require any secrets, in a real production pipeline
+secrets would have to be managed securely, for example by storing them in AWS secrets
+manager.
+
+### dbt Targets
+
+There would be separate targets for dev and prod. For dev each user would have their
+own schema in the data warehouse where their dev runs are stored.
+
+### Pull Request Template
+
+A pull request template would be created to ensure that high standards are upheld.
+For example the user who committed the pull request will need to demonstrate that all
+dbt models and tests have passed and show sufficient verification to ensure that the
+data is accurate (e.g. comparing the output to the source data). Ensuring data integrity
+is of utmost importance for a company that wants to become more data driven.
+
+### Orchestration
+
+An orchestrator such as Airflow or Dagster would be used in production to ensure that
+models are run in the correct order and to enable easy viewing of the data lineage.
+
+### Monitoring
+
+Results of the dbt runs and tests would be sent to a slack channel so that the data team
+is alerted if there are any failures.
+
+### Storage
+
+The raw bluesky.events files would be sent to a storage bucket (e.g. S3 or GCP bucket).
+The tables and views would be stored in a data warehouse, e.g. Snowflake or Bigquery.
+
+### Containerisation
+
+In production the code would be run inside a container on AWS or GCP rather than locally
+on a laptop to ensure reliability and robustness in the pipeline.
+
+In development, while running the code in a virtual environment is often sufficient it
+would be better to run the code inside a dev container to ensure an exact replica of 
+the conditions inside the production container.
 
 ## Additional Metric - Posts by time of day
 
